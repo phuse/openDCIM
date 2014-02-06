@@ -31,3 +31,8 @@ CREATE TABLE fac_Slots (
 --
 
 ALTER TABLE fac_Cabinet ADD COLUMN FrontEdge ENUM("Top","Right","Bottom","Left") NOT NULL DEFAULT "Top" AFTER MapX2;
+--
+-- Add configuration item for locking serial number
+--
+INSERT INTO fac_Config VALUES ('SerialLock', '', 'Enabled/Disabled', 'string', 'Disabled');
+

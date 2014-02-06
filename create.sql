@@ -791,7 +791,8 @@ INSERT INTO fac_Config VALUES
 	('HumidityRedHigh', '75', 'percentage', 'float', '75'),
 	('HumidityRedLow', '35', 'percentage', 'float', '35'),
 	('HumidityYellowHigh', '55', 'percentage', 'float', '55'),
-	('HumidityYellowLow', '45', 'percentage', 'float', '45')	
+	('HumidityYellowLow', '45', 'percentage', 'float', '45'),	
+	('SerialLock','Disabled','Enabled/Disabled', 'string', 'Disabled')	
 ;
 
 --

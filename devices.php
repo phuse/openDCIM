@@ -1364,11 +1364,16 @@ echo '<div class="center"><div>
 		   <div><label for="label">'.__("Label").'</label></div>
 		   <div><input type="text" class="validate[required,minSize[3],maxSize[50]]" name="label" id="label" size="40" value="'.$dev->Label.'"></div>
 		</div>
-		<div>
-		   <div><label for="serialno">'.__("Serial Number").'</label></div>
-		   <div><input type="text" name="serialno" id="serialno" size="40" value="'.$dev->SerialNo.'">
-		   <button class="hide" type="button" onclick="getScan(\'serialno\')">',__("Scan Barcode"),'</button></div>
-		</div>
+		<div>'
+                   # lock the serial field if the device has already been added to ensure consistency of data provided to other tools
+                   if ($dev->SerialNo && $config->ParameterArray["SerialLock"]=='Enabled'){
+echo '              <div><input type="text" name="serialno" id="serialno" size="40" value="'.$dev->SerialNo.'" readonly>
+                    <button class="hide" type="button" onclick="getScan(\'serialno\')">',__("Scan Barcode"),'</button></div>';
+                   }else{
+echo '              <div><input type="text" name="serialno" id="serialno" size="40" value="'.$dev->SerialNo.'">
+                    <button class="hide" type="button" onclick="getScan(\'serialno\')">',__("Scan Barcode"),'</button></div>';
+                   }
+echo '          </div>
 		<div>
 		   <div><label for="assettag">'.__("Asset Tag").'</label></div>
 		   <div><input type="text" name="assettag" id="assettag" size="20" value="'.$dev->AssetTag.'">

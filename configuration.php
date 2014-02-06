@@ -979,6 +979,17 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["VMExpirationTime"],'" name="VMExpirationTime" value="',$config->ParameterArray["VMExpirationTime"],'"></div>
 				</div>
 			</div> <!-- end table -->
+                        <h3>',__("Security Settings"),'</h3>
+                        <div class="table">
+                                <div>
+                                        <div><label for="SerialLock">',__("Serial Lock"),'</label></div>
+                                        <div><select id="SerialLock" name="SerialLock" defaultvalue="',$config->defaults["SerialLock"],'" data="',$config->ParameterArray["SerialLock"],'">
+                                                        <option value="Disabled"',(($config->ParameterArray["SerialLock"]=="disabled")?' selected="selected"':''),'>',__("Disabled"),'</option>
+                                                        <option value="Enabled"',(($config->ParameterArray["SerialLock"]=="enabled")?' selected="selected"':''),'>',__("Enabled"),'</option>
+                                                </select>
+                                        </div>
+                                </div>
+                        </div> <!-- end table -->
 			',$tzmenu,'
 		</div>
 		<div id="style">

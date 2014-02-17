@@ -1742,7 +1742,7 @@ echo '<div class="center"><div>
                    <div><label for="serialno">'.__("Serial Number").'</label></div>';
                    # lock the serial field if the device has already been added to ensure dataconsistency
                                 if ($dev->SerialNo && $config->ParameterArray["SerialLock"]=='Enabled'){
-echo '             <div><input type="text" name="serialno" id="serialno" size="40" value="'.$dev->SerialNo.'" readonly>';
+echo '             <div><input type="text" name="serialno" id="serialno" size="40" value="'.$dev->SerialNo.'" readonly></div>';
                    }else{
 echo '             <div><input type="text" name="serialno" id="serialno" size="40" value="'.$dev->SerialNo.'">
                    <button class="hide" type="button" onclick="getScan(\'serialno\')">',__("Scan Barcode"),'</button></div>';

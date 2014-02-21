@@ -1214,6 +1214,8 @@ class Device {
 				// Make sure the position updated before creating a new device
 				if((isset($pos) && $pos!=$this->Position) || !is_null($clonedparent)){
 					(!is_null($clonedparent))?$this->ParentDevice=$clonedparent:'';
+				//Add logging for traceability of a copy's origins
+                		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 					$this->CreateDevice();
 				}else{
 					return false;
@@ -1420,6 +1422,8 @@ class Device {
 			error_log("UpdateDevice::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
+		//Add logging
+                (class_exists('LogActions'))?LogActions::LogThis($this):'';
 		
 		return true;
 	}

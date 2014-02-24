@@ -53,6 +53,7 @@ class LogActions {
 		if(preg_match("/create/i", $caller['function'])){$action='1';}
 		if(preg_match("/delete/i", $caller['function'])){$action='2';}
 		if(preg_match("/update/i", $caller['function'])){$action='3';}
+		if(preg_match("/copy/i", $caller['function'])){$action='4';}
 		switch(get_class($object)){
 			case "Device":
 				$sql="INSERT INTO fac_DeviceLog set UserID='$userid', DeviceID='$object->DeviceID', Action=$action, Time=NOW();";

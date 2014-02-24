@@ -316,7 +316,7 @@
 	$pwrCords=null;
 	$chassis="";
 	$copy = false;
-	$copyerr=__("This device is a copy of an existing device.  Remember to set the new location before saving.");
+	$copyerr=__("This device is a copy of an existing device.  Remember to set the new location and serial before saving.");
 	$childList=array();
 
 	// This page was called from somewhere so let's do stuff.
@@ -1741,7 +1741,7 @@ echo '<div class="center"><div>
                 <div>
                    <div><label for="serialno">'.__("Serial Number").'</label></div>';
                    # lock the serial field if the device has already been added to ensure dataconsistency
-                                if ($dev->SerialNo && $config->ParameterArray["SerialLock"]=='Enabled'){
+                                if ($dev->SerialNo && $config->ParameterArray["SerialLock"]=='Enabled' && !$copy){
 echo '             <div><input type="text" name="serialno" id="serialno" size="40" value="'.$dev->SerialNo.'" readonly></div>';
                    }else{
 echo '             <div><input type="text" name="serialno" id="serialno" size="40" value="'.$dev->SerialNo.'">

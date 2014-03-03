@@ -958,6 +958,7 @@ class Device {
 	var $SNMPCommunity;
 	var $ESX;
 	var $Owner;
+	var $EISService;
 	var $EscalationTimeID;
 	var $EscalationID;
 	var $PrimaryContact;
@@ -970,6 +971,7 @@ class Device {
 	var $NominalWatts;
 	var $PowerSupplyCount;
 	var $DeviceType;
+	var $AssetLifeCycle;
 	var $ChassisSlots;
 	var $RearChassisSlots;
 	var $ParentDevice;
@@ -991,6 +993,7 @@ class Device {
 		
 		//Keep weird values out of DeviceType
 		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
+		$validassetlifecyclestate=array('Installing','In Production','Maintenance','End Of Life','Decomissioned');
 
 		$this->DeviceID=intval($this->DeviceID);
 		$this->Label=addslashes(trim($this->Label));
@@ -1000,6 +1003,7 @@ class Device {
 		$this->SNMPCommunity=addslashes(trim($this->SNMPCommunity));
 		$this->ESX=intval($this->ESX);
 		$this->Owner=intval($this->Owner);
+		$this->EISService=intval($this->EISService);
 		$this->EscalationTimeID=intval($this->EscalationTimeID);
 		$this->EscalationID=intval($this->EscalationID);
 		$this->PrimaryContact=intval($this->PrimaryContact);
@@ -1012,6 +1016,7 @@ class Device {
 		$this->NominalWatts=intval($this->NominalWatts);
 		$this->PowerSupplyCount=intval($this->PowerSupplyCount);
 		$this->DeviceType=(in_array($this->DeviceType,$validdevicetypes))?$this->DeviceType:'Server';
+		$this->AssetLifeCycle=(in_array($this->AssetLifeCycle,$validassetlifecyclestate))?$this->AssetLifeCycle:'Installing';
 		$this->ChassisSlots=intval($this->ChassisSlots);
 		$this->RearChassisSlots=intval($this->RearChassisSlots);
 		$this->ParentDevice=intval($this->ParentDevice);
@@ -1056,6 +1061,7 @@ class Device {
 		$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
 		$dev->ESX=$dbRow["ESX"];
 		$dev->Owner=$dbRow["Owner"];
+		$dev->EISService=$dbRow["EISService"];
 		// Suppressing errors on the following two because they can be null and that generates an apache error
 		@$dev->EscalationTimeID=$dbRow["EscalationTimeID"];
 		@$dev->EscalationID=$dbRow["EscalationID"];
@@ -1069,6 +1075,7 @@ class Device {
 		$dev->NominalWatts=$dbRow["NominalWatts"];
 		$dev->PowerSupplyCount=$dbRow["PowerSupplyCount"];
 		$dev->DeviceType=$dbRow["DeviceType"];
+		$dev->AssetLifeCycle=$dbRow["AssetLifeCycle"];
 		$dev->ChassisSlots=$dbRow["ChassisSlots"];
 		$dev->RearChassisSlots=$dbRow["RearChassisSlots"];
 		$dev->ParentDevice=$dbRow["ParentDevice"];
@@ -1109,7 +1116,7 @@ class Device {
 
 		// Remove information that this user isn't allowed to see
 		if($this->Rights=='None'){
-			$publicfields=array('DeviceID','Label','Cabinet','Position','Height','Reservation','DeviceType','Rights');
+			$publicfields=array('DeviceID','Label','Cabinet','Position','Height','Reservation','DeviceType','AssetLifeCycle','Rights');
 			foreach($this as $prop => $value){
 				if(!in_array($prop,$publicfields)){
 					$this->$prop=null;
@@ -1138,6 +1145,7 @@ class Device {
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
+			AssetLifeCycle=\"$this->AssetLifeCycle\",EISService=$this->EISService, 
 			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide;";
 
 		if ( ! $dbh->exec( $sql ) ) {
@@ -1415,6 +1423,7 @@ class Device {
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
+			AssetLifeCycle=\"$this->AssetLifeCycle\",EISService=$this->EISService, 
 			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
 
 		if(!$dbh->query($sql)){
@@ -2813,6 +2822,7 @@ class RackRequest {
   var $AssetTag;
   var $ESX;
   var $Owner;
+  var $EISService;
   var $DeviceHeight;
   var $EthernetCount;
   var $VLANList;
@@ -2820,6 +2830,7 @@ class RackRequest {
   var $SANList;
   var $DeviceClass;
   var $DeviceType;
+  var $AssetLifeCycle;
   var $LabelColor;
   var $CurrentLocation;
   var $SpecialInstructions;
@@ -2837,6 +2848,7 @@ class RackRequest {
 		DeviceClass=\"".addslashes($this->DeviceClass)."\", DeviceType=\"".addslashes($this->DeviceType)."\",
 		LabelColor=\"".addslashes($this->LabelColor)."\", 
 		CurrentLocation=\"".addslashes(transform($this->CurrentLocation))."\",
+		EISService=\"".intval($this->EISService)."\", 
 		SpecialInstructions=\"".addslashes($this->SpecialInstructions)."\"";
     
 	if(!$dbh->exec($sql)){
@@ -2875,6 +2887,7 @@ class RackRequest {
 		$requestList[$requestNum]->DeviceClass=$row["DeviceClass"];
 		$requestList[$requestNum]->DeviceType=$row["DeviceType"];
 		$requestList[$requestNum]->LabelColor=$row["LabelColor"];
+		$requestList[$requestNum]->EISService=$row["EISService"];
 		$requestList[$requestNum]->CurrentLocation=$row["CurrentLocation"];
 		$requestList[$requestNum]->SpecialInstructions=$row["SpecialInstructions"];
     }
@@ -2905,6 +2918,7 @@ class RackRequest {
 		$this->DeviceType=$row["DeviceType"];
 		$this->LabelColor=$row["LabelColor"];
 		$this->CurrentLocation=$row["CurrentLocation"];
+		$this->EISService=$row["EISService"];
 		$this->SpecialInstructions=$row["SpecialInstructions"];
 	}else{
 		//something bad happened maybe tell someone
@@ -2941,6 +2955,7 @@ class RackRequest {
 		EthernetCount=\"".intval($this->EthernetCount)."\", VLANList=\"".addslashes($this->VLANList)."\",
 		SANCount=\"".intval($this->SANCount)."\", SANList=\"".addslashes($this->SANList)."\",
 		DeviceClass=\"".addslashes($this->DeviceClass)."\", DeviceType=\"".addslashes($this->DeviceType)."\",
+		EISService=\"".intval($this->EISService)."\", 
 		LabelColor=\"".addslashes($this->LabelColor)."\", 
 		CurrentLocation=\"".addslashes(transform($this->CurrentLocation))."\",
 		SpecialInstructions=\"".addslashes($this->SpecialInstructions)."\" 

@@ -209,7 +209,48 @@ class Contact {
 		return $contactList;
 	}
 }
+class EISService {
+	var $EISServiceID;
+	var $ServiceName;
+	var $ServiceCode;
+	var $SOM;
+	var $ServiceColor;
 
+	function MakeSafe(){
+		$this->EISServiceID=intval($this->EISServiceID);
+		$this->ServiceName=addslashes(trim($this->ServiceName));
+		$this->ServiceCode=intval($this->ServiceCode);
+		$this->SOM=addslashes(trim($this->SOM));
+		$this->ServiceColor=addslashes(trim($this->ServiceColor));
+	}
+	function MakeDisplay(){
+		$this->ServiceName=stripslashes($this->SeviceName);
+		$this->SOM=stripslashes($this->SOM);
+		$this->ServiceCode=($this->ServiceCode);
+		$this->ServiceColor=stripslashes($this->ServiceColor);
+	}
+	static function RowToObject($row){
+		$svc=new EISService();
+		$svc->EISServiceID=$row["EISServiceID"];
+		$svc->ServiceName=$row["ServiceName"];
+		$svc->ServiceCode=$row["ServiceCode"];
+		$svc->SOM=$row["SOM"];
+		$svc->ServiceColor=$row["ServiceColor"];
+
+		$svc->MakeDisplay();
+
+		return $svc;
+	}
+	function GetEISServiceList() {
+		$sql="SELECT * FROM fac_EISservice ORDER BY ServiceName ASC;";
+		$EISServiceList=array();
+		foreach($this->query($sql) as $row){
+			$svcList[]=EISService::RowToObject($row);
+		}
+
+		return $svcList;
+	}	
+}
 class Department {
 	/* Department:	Workgroup, division, department, or external customer.  This
 					is simply a mechanism for grouping multiple assets together

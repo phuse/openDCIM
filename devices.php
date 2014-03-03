@@ -354,6 +354,7 @@
 				$dev->SerialNo=$_POST['serialno'];
 				$dev->AssetTag=$_POST['assettag'];
 				$dev->Owner=$_POST['owner'];
+				$dev->EISService=$_POST['eissvc'];
 				$dev->EscalationTimeID=$_POST['escalationtimeid'];
 				$dev->EscalationID=$_POST['escalationid'];
 				$dev->PrimaryContact=$_POST['primarycontact'];
@@ -362,6 +363,7 @@
 				$dev->Height=$_POST['height'];
 				$dev->TemplateID=$_POST['templateid'];
 				$dev->DeviceType=$_POST['devicetype'];
+				$dev->AssetLifeCycle=$_POST['assetlifecycle'];
 				$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
 				$dev->InstallDate=date('Y-m-d',strtotime($_POST['installdate']));
 				$dev->WarrantyCo=$_POST['warrantyco'];
@@ -508,6 +510,11 @@
 		// sets install date to today when a new device is being created
 		$dev->InstallDate=date("m/d/Y");
 	}
+		$lifecyclearray=array('Installing' => __("Installing"),
+						'In Production' => __("In Production"),
+						'Maintenance' => __("Maintenance"),
+						'End Of Life' => __("End Of Life"),
+						'Decomissioned' => __("Decomissioned"));
 
 	// We don't want someone accidentally adding a chassis device inside of a chassis slot.
 	if($dev->ParentDevice>0){
@@ -544,6 +551,7 @@
 	$escTimeList=$escTime->GetEscalationTimeList();
 	$escList=$esc->GetEscalationList();
 	$deptList=$Dept->GetDepartmentList();
+	$EISServiceList=$EISService->GetEISServiceList();
 
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
@@ -1793,8 +1801,33 @@ echo '          </div>
 echo '			</select>
 			<button type="button">',__("Show Contacts"),'</button>
 		   </div>
-		</div>
-		<div>
+		</div>';
+
+/* echo '		<div>
+		   <div><label for="eissvc">'.__("EIS Service").'</label></div>
+		   <div>
+			<select name="eissvc" id="eissvc">
+				<option value=0>'.__("Unassigned").'</option>';
+
+			foreach($EISServiceList as $svcRow){
+				if($dev->EISService==$svcRow->EISServiceID){$selected=" selected";}else{$selected="";}
+				print "\t\t\t\t<option value=\"$svcRow->EISServiceID\"$selected>$svcRow->ServiceName</option>\n";
+			}
+echo '			</select>
+		   </div>
+		</div>';
+*/
+echo '             <div>
+                   <div>',__("Asset Life Cycle Details"),'</div>
+                   <div><select name="assetlifecycle">
+                        <option value=0>',__("Select..."),'</option>';
+               		foreach($lifecyclearray as $devCycle => $translation){
+                         if($devCycle==$dev->AssetLifeCycle){$selected=" selected";}else{$selected="";}
+                          print "\t\t\t<option value=\"$devCycle\"$selected>$translation</option>\n";
+                	}
+echo '		  </select></div>
+		</div>';
+echo '		<div>
 		   <div>&nbsp;</div>
 		   <div><fieldset>
 		   <legend>',__("Escalation Information"),'</legend>

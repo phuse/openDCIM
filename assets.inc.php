@@ -976,6 +976,7 @@ class Device {
 	var $RearChassisSlots;
 	var $ParentDevice;
 	var $MfgDate;
+	var $DecomDate;
 	var $InstallDate;
 	var $WarrantyCo;
 	var $WarrantyExpire;
@@ -1024,6 +1025,7 @@ class Device {
 		$this->InstallDate=addslashes($this->InstallDate);
 		$this->WarrantyCo=addslashes(trim($this->WarrantyCo));
 		$this->WarrantyExpire=addslashes($this->WarrantyExpire);
+		$this->DecomDate=addslashes($this->DecomDate);
 		$this->Notes=addslashes(trim($this->Notes));
 		$this->Reservation=intval($this->Reservation);
 		$this->HalfDepth=intval($this->HalfDepth);
@@ -1040,6 +1042,7 @@ class Device {
 		$this->InstallDate=stripslashes($this->InstallDate);
 		$this->WarrantyCo=stripslashes($this->WarrantyCo);
 		$this->WarrantyExpire=stripslashes($this->WarrantyExpire);
+		$this->DecomDate=stripslashes($this->DecomDate);
 		$this->Notes=stripslashes($this->Notes);
 	}
 
@@ -1083,6 +1086,7 @@ class Device {
 		$dev->InstallDate=$dbRow["InstallDate"];
 		$dev->WarrantyCo=$dbRow["WarrantyCo"];
 		@$dev->WarrantyExpire=$dbRow["WarrantyExpire"];
+		@$dev->DecomDate=$dbRow["DecomDate"];
 		$dev->Notes=$dbRow["Notes"];
 		$dev->Reservation=$dbRow["Reservation"];
 		$dev->HalfDepth=$dbRow["HalfDepth"];
@@ -1145,7 +1149,7 @@ class Device {
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			AssetLifeCycle=\"$this->AssetLifeCycle\",EISService=$this->EISService, 
+			AssetLifeCycle=\"$this->AssetLifeCycle\",DecomDate=\"".date("Y-m-d", strtotime($this->DecomDate))."\",EISService=$this->EISService, 
 			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide;";
 
 		if ( ! $dbh->exec( $sql ) ) {
@@ -1423,7 +1427,7 @@ class Device {
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			AssetLifeCycle=\"$this->AssetLifeCycle\",EISService=$this->EISService, 
+			AssetLifeCycle=\"$this->AssetLifeCycle\",DecomDate=\"".date("Y-m-d", strtotime($this->DecomDate))."\", EISService=$this->EISService, 
 			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
 
 		if(!$dbh->query($sql)){

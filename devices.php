@@ -354,7 +354,6 @@
 				$dev->SerialNo=$_POST['serialno'];
 				$dev->AssetTag=$_POST['assettag'];
 				$dev->Owner=$_POST['owner'];
-				$dev->EISService=$_POST['eissvc'];
 				$dev->EscalationTimeID=$_POST['escalationtimeid'];
 				$dev->EscalationID=$_POST['escalationid'];
 				$dev->PrimaryContact=$_POST['primarycontact'];
@@ -365,6 +364,7 @@
 				$dev->DeviceType=$_POST['devicetype'];
 				$dev->AssetLifeCycle=$_POST['assetlifecycle'];
 				$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
+				$dev->DecomDate=date('Y-m-d',strtotime($_POST['decomdate']));
 				$dev->InstallDate=date('Y-m-d',strtotime($_POST['installdate']));
 				$dev->WarrantyCo=$_POST['warrantyco'];
 				$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['warrantyexpire']));
@@ -551,7 +551,6 @@
 	$escTimeList=$escTime->GetEscalationTimeList();
 	$escList=$esc->GetEscalationList();
 	$deptList=$Dept->GetDepartmentList();
-	$EISServiceList=$EISService->GetEISServiceList();
 
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
@@ -804,6 +803,7 @@ $(document).ready(function() {
 	$('#mfgdate').datepicker();
 	$('#installdate').datepicker();
 	$('#warrantyexpire').datepicker();
+	$('#decomdate').datepicker();
 	$('#owner').next('button').click(function(){
 		window.open('contactpopup.php?deptid='+$('#owner').val(), 'Contacts Lookup', 'width=800, height=700, resizable=no, toolbar=no');
 		return false;
@@ -1788,7 +1788,7 @@ echo '          </div>
 		   <div><input type="text" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="'.date('m/d/Y',strtotime($dev->WarrantyExpire)).'"></div>
 		</div>
 		<div>
-		   <div><label for="owner">'.__("Departmental Owner").'</label></div>
+		   <div><label for="owner">'.__("Department (PDU)").'</label></div>
 		   <div>
 			<select name="owner" id="owner">
 				<option value=0>'.__("Unassigned").'</option>';
@@ -1827,13 +1827,19 @@ echo '             <div>
                 	}
 echo '		  </select></div>
 		</div>';
+            	if(($write) && ($dev->AssetLifeCycle=="Decomissioned")){
+			echo '<div>
+		   	<div><font color=red><label for="decomdate">'.__("Hardware Disposal Date").'</label></font></div>
+		   	<div><input type="text" class="validate[custom[date]] datepicker" name="decomdate" id="decomdate" value="'.date('m/d/Y',strtotime($dev->DecomDate)).'"></div>
+			</div>';
+ 		}
 echo '		<div>
 		   <div>&nbsp;</div>
 		   <div><fieldset>
 		   <legend>',__("Escalation Information"),'</legend>
 		   <div class="table">
 			<div>
-				<div><label for="escaltationtimeid">',__("Time Period"),'</label></div>
+				<div><label for="escalationtimeid">',__("Time Period"),'</label></div>
 				<div><select name="escalationtimeid" id="escalationtimeid">
 					<option value="">',__("Select..."),'</option>';
 

@@ -958,7 +958,7 @@ class Device {
 	var $SNMPCommunity;
 	var $ESX;
 	var $Owner;
-	var $EISService;
+	var $LService;
 	var $EscalationTimeID;
 	var $EscalationID;
 	var $PrimaryContact;
@@ -1004,7 +1004,7 @@ class Device {
 		$this->SNMPCommunity=addslashes(trim($this->SNMPCommunity));
 		$this->ESX=intval($this->ESX);
 		$this->Owner=intval($this->Owner);
-		$this->EISService=intval($this->EISService);
+		$this->LService=intval($this->LService);
 		$this->EscalationTimeID=intval($this->EscalationTimeID);
 		$this->EscalationID=intval($this->EscalationID);
 		$this->PrimaryContact=intval($this->PrimaryContact);
@@ -1064,7 +1064,7 @@ class Device {
 		$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
 		$dev->ESX=$dbRow["ESX"];
 		$dev->Owner=$dbRow["Owner"];
-		$dev->EISService=$dbRow["EISService"];
+		$dev->LService=$dbRow["EISService"];
 		// Suppressing errors on the following two because they can be null and that generates an apache error
 		@$dev->EscalationTimeID=$dbRow["EscalationTimeID"];
 		@$dev->EscalationID=$dbRow["EscalationID"];
@@ -1149,7 +1149,8 @@ class Device {
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			AssetLifeCycle=\"$this->AssetLifeCycle\",DecomDate=\"".date("Y-m-d", strtotime($this->DecomDate))."\",EISService=$this->EISService, 
+			AssetLifeCycle=\"$this->AssetLifeCycle\",DecomDate=\"".date("Y-m-d", strtotime($this->DecomDate))."\", 
+			EISService=$this->LService, 
 			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide;";
 
 		if ( ! $dbh->exec( $sql ) ) {
@@ -1427,7 +1428,8 @@ class Device {
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			AssetLifeCycle=\"$this->AssetLifeCycle\",DecomDate=\"".date("Y-m-d", strtotime($this->DecomDate))."\", EISService=$this->EISService, 
+			AssetLifeCycle=\"$this->AssetLifeCycle\",DecomDate=\"".date("Y-m-d", strtotime($this->DecomDate))."\",  
+			EISService=$this->LService,
 			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
 
 		if(!$dbh->query($sql)){
@@ -1641,6 +1643,24 @@ class Device {
 			WHERE a.Cabinet=b.CabinetID AND a.DeviceID=search.DeviceID ORDER BY 
 			b.DataCenterID, a.Label) DataCenterID FROM fac_Device search WHERE 
 			Owner=$this->Owner ORDER BY Label;";
+
+		$deviceList=array();
+
+		foreach($dbh->query($sql) as $deviceRow){
+			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
+		}
+
+		return $deviceList;
+	}
+	function GetDevicesbyService(){
+		global $dbh;
+
+		$this->MakeSafe();
+		
+		$sql="SELECT *, (SELECT b.DataCenterID FROM fac_Device a, fac_Cabinet b 
+			WHERE a.Cabinet=b.CabinetID AND a.DeviceID=search.DeviceID ORDER BY 
+			b.DataCenterID, a.Label) DataCenterID FROM fac_Device search WHERE 
+			EISService=$this->LService ORDER BY Label;";
 
 		$deviceList=array();
 
@@ -2826,7 +2846,7 @@ class RackRequest {
   var $AssetTag;
   var $ESX;
   var $Owner;
-  var $EISService;
+  var $LService;
   var $DeviceHeight;
   var $EthernetCount;
   var $VLANList;
@@ -2852,7 +2872,6 @@ class RackRequest {
 		DeviceClass=\"".addslashes($this->DeviceClass)."\", DeviceType=\"".addslashes($this->DeviceType)."\",
 		LabelColor=\"".addslashes($this->LabelColor)."\", 
 		CurrentLocation=\"".addslashes(transform($this->CurrentLocation))."\",
-		EISService=\"".intval($this->EISService)."\", 
 		SpecialInstructions=\"".addslashes($this->SpecialInstructions)."\"";
     
 	if(!$dbh->exec($sql)){
@@ -2891,7 +2910,6 @@ class RackRequest {
 		$requestList[$requestNum]->DeviceClass=$row["DeviceClass"];
 		$requestList[$requestNum]->DeviceType=$row["DeviceType"];
 		$requestList[$requestNum]->LabelColor=$row["LabelColor"];
-		$requestList[$requestNum]->EISService=$row["EISService"];
 		$requestList[$requestNum]->CurrentLocation=$row["CurrentLocation"];
 		$requestList[$requestNum]->SpecialInstructions=$row["SpecialInstructions"];
     }
@@ -2922,7 +2940,6 @@ class RackRequest {
 		$this->DeviceType=$row["DeviceType"];
 		$this->LabelColor=$row["LabelColor"];
 		$this->CurrentLocation=$row["CurrentLocation"];
-		$this->EISService=$row["EISService"];
 		$this->SpecialInstructions=$row["SpecialInstructions"];
 	}else{
 		//something bad happened maybe tell someone
@@ -2959,7 +2976,6 @@ class RackRequest {
 		EthernetCount=\"".intval($this->EthernetCount)."\", VLANList=\"".addslashes($this->VLANList)."\",
 		SANCount=\"".intval($this->SANCount)."\", SANList=\"".addslashes($this->SANList)."\",
 		DeviceClass=\"".addslashes($this->DeviceClass)."\", DeviceType=\"".addslashes($this->DeviceType)."\",
-		EISService=\"".intval($this->EISService)."\", 
 		LabelColor=\"".addslashes($this->LabelColor)."\", 
 		CurrentLocation=\"".addslashes(transform($this->CurrentLocation))."\",
 		SpecialInstructions=\"".addslashes($this->SpecialInstructions)."\" 

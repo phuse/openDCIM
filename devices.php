@@ -313,6 +313,7 @@
 	$escTime=new EscalationTimes();
 	$contactList=$contact->GetContactList();
 	$Dept=new Department();
+	$Service=new LogicalService();
 	$pwrCords=null;
 	$chassis="";
 	$copy = false;
@@ -354,6 +355,7 @@
 				$dev->SerialNo=$_POST['serialno'];
 				$dev->AssetTag=$_POST['assettag'];
 				$dev->Owner=$_POST['owner'];
+				$dev->LService=$_POST['service'];
 				$dev->EscalationTimeID=$_POST['escalationtimeid'];
 				$dev->EscalationID=$_POST['escalationid'];
 				$dev->PrimaryContact=$_POST['primarycontact'];
@@ -493,6 +495,7 @@
 				// departmental owner, primary contact, etc are the same as the parent
 				if(isset($_POST['action']) && $_POST['action']=='Child'){
 					$dev->Owner=$pDev->Owner;
+					$dev->LService=$pDev->LService;
 					$dev->EscalationTimeID=$pDev->EscalationTimeID;
 					$dev->EscalationID=$pDev->EscalationID;
 					$dev->PrimaryContact=$pDev->PrimaryContact;
@@ -551,6 +554,7 @@
 	$escTimeList=$escTime->GetEscalationTimeList();
 	$escList=$esc->GetEscalationList();
 	$deptList=$Dept->GetDepartmentList();
+	$ServiceList=$Service->GetServiceList();
 
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
@@ -1802,21 +1806,23 @@ echo '			</select>
 			<button type="button">',__("Show Contacts"),'</button>
 		   </div>
 		</div>';
-
-/* echo '		<div>
-		   <div><label for="eissvc">'.__("EIS Service").'</label></div>
+//INsert Service here
+echo '		<div>
+		   <div><label for="service">'.__("EIS Service").'</label></div>
 		   <div>
-			<select name="eissvc" id="eissvc">
+			<select name="service" id="service">
 				<option value=0>'.__("Unassigned").'</option>';
 
-			foreach($EISServiceList as $svcRow){
-				if($dev->EISService==$svcRow->EISServiceID){$selected=" selected";}else{$selected="";}
-				print "\t\t\t\t<option value=\"$svcRow->EISServiceID\"$selected>$svcRow->ServiceName</option>\n";
+			foreach($ServiceList as $svcRow){
+				if($dev->LService==$svcRow->ServiceID){$selected=" selected";}else{$selected="";}
+				print "\t\t\t\t<option value=\"$svcRow->ServiceID\"$selected>$svcRow->ServiceName</option>\n";
 			}
+
 echo '			</select>
 		   </div>
 		</div>';
-*/
+			//<button type="button">',__("Show Id"),'</button>
+//Asset LifeCycle Details
 echo '             <div>
                    <div>',__("Asset Life Cycle Details"),'</div>
                    <div><select name="assetlifecycle">

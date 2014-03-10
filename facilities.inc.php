@@ -41,5 +41,6 @@ require_once( "misc.inc.php" );
 require_once( "logging.inc.php" );
 */
 
+require_once( "logging.inc.php" );
 require_once( "addons.inc.php" );
 ?>

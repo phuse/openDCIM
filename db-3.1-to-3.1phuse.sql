@@ -13,5 +13,14 @@ CREATE TABLE IF NOT EXISTS `fac_EISservice` (
   `ServiceColor` varchar(7) NOT NULL DEFAULT '#FFFFFF',
   PRIMARY KEY (`EISServiceID`),
   UNIQUE KEY `ServiceName` (`ServiceName`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 ALTER TABLE `fac_Device` ADD `EISService` INT (11) NOT NULL ;
+CREATE TABLE IF NOT EXISTS `fac_DeviceLog` (
+  `LogID` int(11) NOT NULL AUTO_INCREMENT,
+  `UserID` varchar(80) NOT NULL,
+  `DeviceID` int(11) NOT NULL,
+  `Action` ENUM('CreateDevice','UpdateDevice','CopyDevice','DeleteDevice') NOTNULL,
+  `Time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`LogID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+

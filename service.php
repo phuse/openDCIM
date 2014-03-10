@@ -18,7 +18,7 @@
 	if(isset($_POST['action'])&& (($_POST['action']=='Create') || ($_POST['action']=='Update'))){
 		$svc->ServiceID=$_POST['svcid'];
 		$svc->ServiceName=trim($_POST['svcname']);
-		$svc->SOM=$_POST['som'];
+		$svc->SOM=$_POST['svcmgr'];
 		$svc->ServiceColor=$_POST['svccolor'];
 
 		/* if($svc->ServiceName!=''){
@@ -52,22 +52,12 @@
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
 <script type="text/javascript">
 function showgroup(obj){
-	self.frames['groupadmin'].location.href='dept_groups.php?deptid='+obj;
 	document.getElementById('groupadmin').style.display = "block";
 	document.getElementById('svcname').readOnly = true
 	document.getElementById('svcmgr').readOnly = true
 	document.getElementById('svccolor').readOnly = true
 	document.getElementById('controls').id = "displaynone";
-	$('.color-picker').minicolors('destroy');
 }
-	$(document).ready( function() {
-		$(".color-picker").minicolors({
-			letterCase: 'uppercase',
-			change: function(hex, rgb) {
-				logData(hex, rgb);
-			}
-		});
-	});
 </script>
 </head>
 <body>
@@ -77,7 +67,7 @@ function showgroup(obj){
 	include( 'sidebar.inc.php' );
 	echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("Data Center Department Detail"),'</h3>
+<h3>',__("Data Center Service Detail"),'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table centermargin">
@@ -99,7 +89,7 @@ function showgroup(obj){
 </div>
 <div>
    <div><label for="svcmgr">',__("Service Operations Manager"),'</label></div>
-   <div><input type="text" size="50" name="som" id="svcmgr" maxlength="80" value="',$svc->SOM,'"></div>
+   <div><input type="text" size="50" name="svcmgr" id="svcmgr" maxlength="80" value="',$svc->SOM,'"></div>
 </div>
 <div>
    <div><label for="svcCode">',__("Service Code"),'</label></div>
@@ -116,11 +106,11 @@ function showgroup(obj){
 </div>
 </div> <!-- END div.table -->
 </form>
-<iframe name="groupadmin" id="groupadmin" frameborder=0 scrolling="no"></iframe>
 <br>
 </div></div>
 <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->
+spoon!
 </body>
 </html>

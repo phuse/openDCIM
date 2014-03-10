@@ -128,6 +128,7 @@ class Cabinet {
 			return false;
 		}else{
 			$this->CabinetID=$dbh->lastInsertID();
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		}
 		
 		return $this->CabinetID;
@@ -155,6 +156,8 @@ class Cabinet {
 
 			error_log("UpdateCabinet::PDO Error: {$info[2]} SQL=$sql" );
 			return false;
+		} else {
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		}
 
 		return true;
@@ -407,6 +410,8 @@ class Cabinet {
 
 			error_log("PDO Error::DeleteCabinet: {$info[2]} SQL=$sql");
 			return false;
+		} else {  
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		}
 		
 		return true;
@@ -1248,6 +1253,7 @@ class Device {
 			}	
 
 			// And finally create a new device based on the exact same info
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			$this->CreateDevice();
 
 			// If this is a chassis device and children are present clone them

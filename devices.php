@@ -415,6 +415,7 @@
 						case 'Delete':
 							$dev->DeleteDevice();
 							header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
+							LogActions::LogThis($this);
 							exit;
 							break; // the exit should handle it
 						case 'Copy':
@@ -2339,7 +2340,8 @@ echo '	<div class="table">
 		}).then(function(){
 			movebuttons();
 		});
-<?php } ?>
+<?php } 
+	LogActions::LogThis($this); ?>
 	});
 </script>
 

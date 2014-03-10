@@ -31,12 +31,12 @@
 
 	LogActions::LogThis($this);
 
-
 */
 
 class LogActions {
 	var $UserID;
 	var $DeviceID;
+	var $Cabinet;
 	var $Action;
 	var $Notes;
 	var $Time;
@@ -56,7 +56,11 @@ class LogActions {
 		if(preg_match("/copy/i", $caller['function'])){$action='4';}
 		switch(get_class($object)){
 			case "Device":
-				$sql="INSERT INTO fac_DeviceLog set UserID='$userid', DeviceID='$object->DeviceID', Action=$action, Time=NOW();";
+				//$sql="INSERT INTO fac_DeviceLog set UserID='$userid', DeviceID='$object->DeviceID', Action=$action, Time=NOW();";
+				//print $caller['function'];
+				//var_dump(debug_backtrace());
+				//var_dump($trace);
+				$sql="INSERT INTO fac_DeviceLog set UserID='$userid', DeviceID='$object->DeviceID', Action='{$caller['function']}', Time=NOW();";
 				break;
 			case "Cabinet":
 			case "SwitchConnection":
@@ -82,9 +86,10 @@ class LogActions {
 			default:
 				// default action to keep log anything we don't understand
 				$sql="INSERT INTO fac_GenericLog set UserID='$userid', Object='{$caller['class']}', Action='{$caller['function']}', Time=NOW();";
-		}
+		} //ends switch
 		$dbh->query($sql);
-	}
+	} //ends function
+
 
 	// Add in functions here for actions lookup by device, user, date, etc
 }

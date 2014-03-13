@@ -14,8 +14,17 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
         $cab=new Cabinet();
         $num = count($data);
         echo "<p> $num fields in line $row: <br /></p>\n";
-        $DataCenterID=CheckDataCenterID($data[0],$row); 
-        $CabinetID=CheckCabinetExists($data[1],$DataCenterID); 
+        $DataCenterID=CheckDataCenterID($data[14],$row); 
+	//if the device has a parent set cabinetid to 0, and if the cabinet can not be found, produce a error and put the device in storage
+	if ($data[16]{
+		$CabinetID=0;
+	}else{
+        	$CabinetID=CheckCabinetExists($data[15],$DataCenterID); 
+		if ($CabinetID=0){
+		echo "error:" . $data[15] . " in row:" . $row . "is not defined, device " . $data[2] . "/" . $data[3] . " has been registered in storage<br>" 		
+		$CabinetID=-1;
+		}
+  	}
 	//populate data
 	$newdata->CabinetHeight=$data[4]; 
 	$newdata->Location=$data[1]; 

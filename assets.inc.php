@@ -179,6 +179,22 @@ class Cabinet {
 			return false;
 		}
 	}
+	function ImportCabinet(){
+		global $dbh;
+
+		$this->MakeSafe();
+		
+		$sql="SELECT * FROM fac_Cabinet WHERE Location=$this->CabinetLocation and DataCenterID==$this->DataCenterID;";
+		
+		if($cabinetRow=$dbh->query($sql)->fetch()){
+			foreach(Cabinet::RowToObject($cabinetRow) as $prop => $value){
+				$this->$prop=$value;
+			}
+			return true;
+		}else{
+			return false;
+		}
+	}
 
 	static function ListCabinets($deptid=null) {
 		global $dbh;

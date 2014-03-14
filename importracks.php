@@ -35,6 +35,7 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
         for ($c=9; $c < $num; $c++) {
             array_push($tagarray, $data[$c]);
         } 
+        echo "CabinetName:" . $data[1] . " Id:" . $CabinetID . "<br />\n";
 	//create the cabinet if it's missing or update it if it exists
         if ($CabinetID==0){
 		$cab->CabinetID=NULL;
@@ -46,22 +47,19 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
 		$cab->CabinetID=$CabinetID;
 		echo "updated:<br />";
 		$cab->GetCabinet();
+		echo "old data<br />";
 		var_dump($cab);
-		//$cab->CabinetID=$CabinetID;
-		//$newdata->CabinetLocation=$data[1]; 
-		//echo $newdata->InstallationDate;
-		//$cab->Location=trim($data[1]);
-		//data_dump($cab);
 		$cab=UpdateCabinetData($newdata);
-		//acutally push to db
+		//actually push to db
 		$cab->UpdateCabinet();
+		echo "<p>new data<br />";
 		var_dump($cab);
 	}
 	var_dump($tagarray);
 	$cab->SetTags($tagarray);
         $row++;
-        echo "Datacenter:" . $data[0] . " id: " . $DataCenterID . "<br />\n";
-        echo "Name:" . $data[1] . " Id:" . $CabinetID . "<br />\n";
+        /* echo "Datacenter:" . $data[0] . " id: " . $DataCenterID . "<br />\n";
+        echo "CabinetName:" . $data[1] . " Id:" . $CabinetID . "<br />\n";
         echo "Manufacturer:" . $data[2] . "<br />\n";
         echo "model:" . $cab->CabinetModel . "<br />\n";
         echo "height" . $data[4] . "<br />\n";
@@ -72,6 +70,7 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
         for ($c=9; $c < $num; $c++) {
             echo "tag" . $c . ":" . $data[$c] . "<br />\n";
         } 
+	*/
     }
     fclose($handle);
 }
@@ -111,7 +110,7 @@ function UpdateCabinetData($indata) {
  	// Check if newdata variables are null and if not insert them into the cab variables 
  	 foreach ($indata as $prop => $value){
 		if ($value!=NULL){
-			echo "<br>" . $prop . ":" . $value; 
+			//echo "<br>" . $prop . ":" . $value; 
 			$cab->$prop=$value;
 		} 
 	}

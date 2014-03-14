@@ -20,8 +20,9 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
 		$CabinetID=0;
 	}else{
         	$CabinetID=CheckCabinetExists($data[15],$DataCenterID); 
+		//if we can't find the cabinet listed, add the device to storage 
 		if ($CabinetID=0){
-		echo "error:" . $data[15] . " in row:" . $row . "is not defined, device " . $data[2] . "/" . $data[3] . " has been registered in storage<br>" 		
+		echo "error! cabinet :" . $data[15] . " in row:" . $row . "is not defined, device " . $data[2] . "/" . $data[3] . " has been registered in storage<br>" 		
 		$CabinetID=-1;
 		}
   	}
@@ -66,29 +67,29 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
 	$newdata->Notes=$data[8]; 
 	$newdata->InstallationDate=date('m/d/Y', strtotime($data[7])); 
 	//create the cabinet if it's missing or update it if it exists
-        if ($CabinetID==0){
-		$cab->CabinetID=NULL;
-		$cab=UpdateCabinetData($newdata);
+        if ($DeviceID==0){
+		$dev->DeviceID=NULL;
+		$dev=UpdateDeviceData($newdata);
 		echo "created:<br />";
-		$cab->CreateCabinet();
-		var_dump($cab);
+		//$dev->CreateDevice();
+		var_dump($dev);
 	}else{
-		$cab->CabinetID=$CabinetID;
+		$dev->DeviceID=$DeviceID;
 		echo "updated:<br />";
-		$cab->GetCabinet();
-		var_dump($cab);
+		$dev->GetDevice();
+		var_dump($dev);
 		//$cab->CabinetID=$CabinetID;
 		//$newdata->CabinetLocation=$data[1]; 
 		//echo $newdata->InstallationDate;
 		//$cab->Location=trim($data[1]);
 		//data_dump($cab);
-		$cab=UpdateCabinetData($newdata);
+		$dev=UpdateDeviceData($newdata);
 		//acutally push to db
-		$cab->UpdateCabinet();
-		var_dump($cab);
+		//$cab->UpdateCabinet();
+		var_dump($dev);
 	}
         $row++;
-        echo "Datacenter:" . $data[0] . " id: " . $DataCenterID . "<br />\n";
+        /* echo "Datacenter:" . $data[0] . " id: " . $DataCenterID . "<br />\n";
         echo "Name:" . $data[1] . " Id:" . $CabinetID . "<br />\n";
         echo "Manufacturer:" . $data[2] . "<br />\n";
         echo "model:" . $cab->CabinetModel . "<br />\n";
@@ -100,14 +101,11 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
         for ($c=28; $c < $num; $c++) {
             echo "tag" . $c . ":" . $data[$c] . "<br />\n";
         } 
+	*/
     }
     fclose($handle);
 }
-/* function setvars() {
-	$this->MakeSafe();
-        $this->DataCenterID=getDataCenterID($data[0]); 
-}
-*/
+// functions
 function CheckDataCenterID($name,$row) {
 	//gets the id of the datacenter in the csv and creates a new datacenter if needed
 	global $dbh;
@@ -145,11 +143,27 @@ function UpdateCabinetData($indata) {
 	}
 	return $cab;
 }
-
-
-/*
-function makesafe() {
-	$this->DataCenterID=intval($this->DataCenterID);
+function CheckDeviceExists($serial,$hostname) {
+	global $dbh;
+	$sql="SELECT * FROM fac_Devices WHERE SerialNo=\"$serial\" OR Label=\"$hostname\" LIMIT 1;";
+	if ($row=$dbh->query($sql)->fetch()){
+        	return $row['DeviceID'];
+        }else{
+           
+		//so the serial number is not there, lets check for hostname
+		return 0;
+	}
 }
-*/
+
+function UpdateDeviceData($indata) {
+	global $dev;
+ 	// Check if newdata variables are null and if not insert them into the cab variables 
+ 	 foreach ($indata as $prop => $value){
+		if ($value!=NULL){
+			echo "<br>" . $prop . ":" . $value; 
+			$dev->$prop=$value;
+		} 
+	}
+	return $dev;
+}
 ?>

@@ -26,8 +26,34 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
 		}
   	}
 	//populate data
-	$newdata->CabinetHeight=$data[4]; 
-	$newdata->Location=$data[1]; 
+	$newdata->Manufacturer=$data[0]; 
+	$newdata->Model=$data[1]; 
+	// insert function to create deviceclass id based on manufacturer, model, height, dataports, wattage,psus and device type
+	// insert function to find deviceclass id based on manufacturer and model
+	$newdata->SerialNo=$data[2]; 
+	$newdata->Label=$data[3]; 
+	$newdata->Domain=$data[4]; 
+	$newdata->AssetTag=$data[5]; 
+	$newdata->PrimaryIP=$data[6]; 
+	$newdata->MfgDate=$data[7]; 
+	$newdata->InstallDate=$data[8]; 
+	$newdata->WarrantyCo=$data[9]; 
+	$newdata->WarrantyExpire=$data[10]; 
+	$newdata->Owner=$data[11]; 
+	$newdata->AssetLifeCycle=$data[12]; 
+	$newdata->Primary Contact=$data[13]; 
+	$newdata->Parent=$data[16]; // parent needs to be found 
+	$newdata->Height=$data[17]; 
+	$newdata->Position=$data[18]; 
+	$newdata->Ports=$data[19]; 
+	$newdata->BackSide=$data[20];//value needs to be changed? 
+	$newdata->HalfDepth=$data[21];//value needs to be changed? 
+	$newdata->ESX=$data[22];//value needs to be changed? 
+	$newdata->PowerSupplyCount=$data[23]; 
+	$newdata->NominalWatts=$data[24]; 
+	$newdata->DeviceType=$data[25];//Identify type id 
+	$newdata->DecomDate=$data[26]; 
+	$newdata->Notes=$data[27]; 
 	$newdata->DataCenterID=$DataCenterID; 
 	//only update existing if we have both model and manufacturer 
 	if ($data[2] AND $data[3] OR $CabinetID==0){
@@ -71,7 +97,7 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
         echo "maxweight:" . $data[6] . "<br />\n";
         echo "installdate:" . $data[7] . "<br />\n";
         echo "<pre>" . $data[8] . "</pre><br />\n";
-        for ($c=9; $c < $num; $c++) {
+        for ($c=28; $c < $num; $c++) {
             echo "tag" . $c . ":" . $data[$c] . "<br />\n";
         } 
     }

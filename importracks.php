@@ -11,6 +11,7 @@
 	$row=1;
 if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
     while (($data = fgetcsv($handle, 500, ",")) !== FALSE) {
+	$tagarray=array();
         $cab=new Cabinet();
         $num = count($data);
         echo "<p> $num fields in line $row: <br /></p>\n";
@@ -30,6 +31,10 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
 	$newdata->MaxWeight=$data[6]; 
 	$newdata->Notes=$data[8]; 
 	$newdata->InstallationDate=date('m/d/Y', strtotime($data[7])); 
+	//populate tags
+        for ($c=9; $c < $num; $c++) {
+            array_push($tagarray, $data[$c]);
+        } 
 	//create the cabinet if it's missing or update it if it exists
         if ($CabinetID==0){
 		$cab->CabinetID=NULL;
@@ -52,6 +57,8 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
 		$cab->UpdateCabinet();
 		var_dump($cab);
 	}
+	var_dump($tagarray);
+	$cab->SetTags($tagarray);
         $row++;
         echo "Datacenter:" . $data[0] . " id: " . $DataCenterID . "<br />\n";
         echo "Name:" . $data[1] . " Id:" . $CabinetID . "<br />\n";

@@ -233,6 +233,7 @@ function CheckContactExists($name) {
 }
 function CheckDomain($domain) {
 	global $dbh;
+	$domain = strtolower($domain);
 	$sql="SELECT * FROM fac_DomainName WHERE DomainName=\"$domain\" LIMIT 1;";
 	if ($row=$dbh->query($sql)->fetch()){
         	return $row['DomainID'];

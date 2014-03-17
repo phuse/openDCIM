@@ -1455,7 +1455,7 @@ class Device {
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
 			AssetLifeCycle=\"$this->AssetLifeCycle\",DecomDate=\"".date("Y-m-d", strtotime($this->DecomDate))."\",  
 			EISService=$this->LService,
-			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide, DomainName==$this->DomainName WHERE DeviceID=$this->DeviceID;";
+			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide, DomainName=$this->DomainName WHERE DeviceID=$this->DeviceID;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();

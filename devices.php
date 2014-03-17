@@ -314,6 +314,7 @@
 	$contactList=$contact->GetContactList();
 	$Dept=new Department();
 	$Service=new LogicalService();
+	$Domains=new Domain();
 	$pwrCords=null;
 	$chassis="";
 	$copy = false;
@@ -386,6 +387,7 @@
 				$dev->NominalWatts=$_POST['nominalwatts'];
 				$dev->HalfDepth=(isset($_POST['halfdepth']))?($_POST['halfdepth']=="on")?1:0:0;
 				$dev->BackSide=(isset($_POST['backside']))?($_POST['backside']=="on")?1:0:0;
+				$dev->DomainName=$_POST['domainname'];
 
 				if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate();}
 
@@ -556,6 +558,7 @@
 	$escList=$esc->GetEscalationList();
 	$deptList=$Dept->GetDepartmentList();
 	$ServiceList=$Service->GetServiceList();
+	$DomainList=$Domains->GetDomainList();
 
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
@@ -1750,6 +1753,20 @@ echo '<div class="center"><div>
 		<div>
 		   <div><label for="label">'.__("Label").'</label></div>
 		   <div><input type="text" class="validate[required,minSize[3],maxSize[50]]" name="label" id="label" size="40" value="'.$dev->Label.'"></div>
+		</div>';
+echo ' 		<div>
+		   <div><label for="domainname">'.__("domainname").'</label></div>
+		   <div>
+			<select name="domainname" id="domainname">
+				<option value=0>'.__("Unassigned").'</option>';
+
+			foreach($DomainList as $domainrow){
+				if($dev->DomainName==$domainrow->DomainID){$selected=" selected";}else{$selected="";}
+				print "\t\t\t\t<option value=\"$domainrow->DomainID\"$selected>$domainrow->DomainName</option>\n";
+			}
+
+echo '			</select>
+		   </div>
 		</div>
                 <div>
                    <div><label for="serialno">'.__("Serial Number").'</label></div>';

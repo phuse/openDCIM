@@ -1,4 +1,36 @@
 <?php
+class Domain {
+        var $DomainID;
+        var $DomainName;
+        function MakeSafe(){
+                $this->DomainID=intval($this->ServiceID);
+                $this->DomainName=addslashes(trim($this->ServiceName));
+        }
+        function MakeDisplay(){
+                $this->DomainName=stripslashes($this->DomainName);
+        }
+        static function RowToObject($row){
+                $dom=new Domain();
+                $dom->DomainID=$row["DomainID"];
+                $dom->DomainName=$row["DomainName"];
+                $dom->MakeDisplay();
+                return $dom;
+        }
+        function query($sql){
+                global $dbh;
+                return $dbh->query($sql);
+        }
+
+        function GetDomainList() {
+                $sql="SELECT * FROM fac_DomainName ORDER BY DomainName ASC;";
+                $DomainList=array();
+                foreach($this->query($sql) as $row){
+                        $DomainList[]=Domain::RowToObject($row);
+                }
+
+                return $DomainList;
+        }
+}
 class LogicalService {
         var $ServiceID;
         var $ServiceName;

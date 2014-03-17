@@ -9,14 +9,27 @@
         $status="";
         $newdata="";
 	$row=1;
-if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
+if (($handle = fopen("devices.csv", "r")) !== FALSE) {
     while (($data = fgetcsv($handle, 500, ",")) !== FALSE) {
         $cab=new Cabinet();
+        $dev=new Device();
         $num = count($data);
         echo "<p> $num fields in line $row: <br /></p>\n";
         $DataCenterID=CheckDataCenterID($data[14],$row); 
+	// Find parent device, do not put chassis in chassis
+	if ($data[16] AND $data[17]!=="Chassis"){  
+		$newdata->Parent=CheckParent(data[13]);	
+	} else {
+		if ($data[17]=="Chassis"){
+		echo "<BR /> can't put chassis in chassis for " . $newdata->Label . " putting it in storage";
+		$CabinetID=-1;
+		}else{
+		echo "<BR /> unable to locate parent for " . $newdata->Label;
+		}
+		$newdata->Parent=NULL;
+	}
 	//if the device has a parent set cabinetid to 0, and if the cabinet can not be found, produce a error and put the device in storage
-	if ($data[16]{
+	if ($newdata->Parent){
 		$CabinetID=0;
 	}else{
         	$CabinetID=CheckCabinetExists($data[15],$DataCenterID); 
@@ -26,14 +39,15 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
 		$CabinetID=-1;
 		}
   	}
+	
 	//populate data
-	$newdata->Manufacturer=$data[0]; 
-	$newdata->Model=$data[1]; 
-	// insert function to create deviceclass id based on manufacturer, model, height, dataports, wattage,psus and device type
-	// insert function to find deviceclass id based on manufacturer and model
 	$newdata->SerialNo=$data[2]; 
 	$newdata->Label=$data[3]; 
-	$newdata->Domain=$data[4]; 
+        //populate tags, from field 28
+        for ($c=28; $c < $num; $c++) {
+            array_push($tagarray, $data[$c]);
+        }
+	$newdata->DomainName=CheckDomainName($data[4]);//This should be looked up in future version 
 	$newdata->AssetTag=$data[5]; 
 	$newdata->PrimaryIP=$data[6]; 
 	$newdata->MfgDate=$data[7]; 
@@ -42,7 +56,13 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
 	$newdata->WarrantyExpire=$data[10]; 
 	$newdata->Owner=$data[11]; 
 	$newdata->AssetLifeCycle=$data[12]; 
-	$newdata->Primary Contact=$data[13]; 
+	// lookup contact if defined
+	if ($data[13]){  
+		$newdata->PrimaryContact=CheckContactExists(data[13]);	
+	} else {
+		echo "<BR /> Contact error, contact removed for " . $newdata->Label;
+		$newdata->PrimaryContact=NULL;
+	}
 	$newdata->Parent=$data[16]; // parent needs to be found 
 	$newdata->Height=$data[17]; 
 	$newdata->Position=$data[18]; 
@@ -56,17 +76,20 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
 	$newdata->DecomDate=$data[26]; 
 	$newdata->Notes=$data[27]; 
 	$newdata->DataCenterID=$DataCenterID; 
-	//only update existing if we have both model and manufacturer 
-	if ($data[2] AND $data[3] OR $CabinetID==0){
-		$newdata->Model=$data[2] . " " .$data[3]; 
+	// insert function to create Template id based on manufacturer, model, height, dataports, wattage,psus and device type
+	// insert function to find Template id based on manufacturer and model
+	//only create template if we have both model and manufacturer 
+        $Manufacturer=CheckMFExists($data[0]);
+	if ($data[0] AND $data[1]){
+		$Model=CheckTemplateExists($Manufacturer,$data[1],$newdata->DeviceType);
 	}else{
-		$newdata->Model=$data[3]; 
+		echo "<BR />missing Manufacturer/Model in row " . $row . " not populating template information<BR />"; 
 	}
 	$newdata->MaxKW=$data[5]; 
 	$newdata->MaxWeight=$data[6]; 
 	$newdata->Notes=$data[8]; 
 	$newdata->InstallationDate=date('m/d/Y', strtotime($data[7])); 
-	//create the cabinet if it's missing or update it if it exists
+	//create the device if it's missing or update it if it exists
         if ($DeviceID==0){
 		$dev->DeviceID=NULL;
 		$dev=UpdateDeviceData($newdata);
@@ -88,20 +111,9 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
 		//$cab->UpdateCabinet();
 		var_dump($dev);
 	}
+	var_dump($tagarray);
+        $dev->SetTags($tagarray);
         $row++;
-        /* echo "Datacenter:" . $data[0] . " id: " . $DataCenterID . "<br />\n";
-        echo "Name:" . $data[1] . " Id:" . $CabinetID . "<br />\n";
-        echo "Manufacturer:" . $data[2] . "<br />\n";
-        echo "model:" . $cab->CabinetModel . "<br />\n";
-        echo "height" . $data[4] . "<br />\n";
-        echo "maxkw: " . $data[5] . "<br />\n";
-        echo "maxweight:" . $data[6] . "<br />\n";
-        echo "installdate:" . $data[7] . "<br />\n";
-        echo "<pre>" . $data[8] . "</pre><br />\n";
-        for ($c=28; $c < $num; $c++) {
-            echo "tag" . $c . ":" . $data[$c] . "<br />\n";
-        } 
-	*/
     }
     fclose($handle);
 }
@@ -165,5 +177,77 @@ function UpdateDeviceData($indata) {
 		} 
 	}
 	return $dev;
+}
+function CheckMFexists($name) {
+	global $dbh;
+	$sql="SELECT * FROM fac_Manufacturer WHERE Name=\"$name\" LIMIT 1;";
+	if ($row=$dbh->query($sql)->fetch()){
+        	return $row['ManufacturerID'];
+        }else if($name){
+		$sql2="INSERT INTO fac_Manufacturer (ManufacturerID,Name) VALUES (NULL,\"$name\");";
+		if ($dbh->query($sql2)){
+			//return the created ID
+			return $dbh->lastInsertId();
+		} else {
+			echo "aborting due to error creating new Manufacturer! in line " . $row;
+			break;
+		}
+	}
+}
+function CheckTemplateExists($manufacturer,$name,$type) {
+	global $dbh;
+	global $newdata;
+	global $row;
+	$sql="SELECT * FROM fac_Template WHERE Name=\"$name\" AND Manufacturer=\"$manufacturer\" LIMIT 1;";
+	if ($row=$dbh->query($sql)->fetch()){
+        	return $row['TemplateID'];
+        }else if($name AND $manufacturer){ //Create a new template 
+		$sql2="INSERT INTO fac_DeviceTemplate (TemplateID,ManufacturerID,Model,Height,Weight,Wattage,DeviceType,PSCount,NumPorts) VALUES (NULL,\"$manufacturer\",\"$name\",\"$newdata->Height\",NULL,NULL,$type);";
+		if ($dbh->query($sql2)){
+			//return the created ID
+			echo "<BR />created new template <A HREF=/device_templates.php?templateid=" . $dbh->lastInsertId() . ">" . $manufacturer . "-". $name . "</A>"; 
+			return $dbh->lastInsertId();
+		} else {
+			echo "aborting due to error creating new Template! in line " . $row;
+			break;
+		}
+	}
+}
+
+function CheckContactExists($name) {
+	global $dbh;
+	$sql="SELECT * FROM fac_Contact WHERE UserID=\"$name\" LIMIT 1;";
+	if ($row=$dbh->query($sql)->fetch()){
+        	return $row['ContactID'];
+        }else if($name){
+			// add ldap lookups?
+		$sql2="INSERT INTO fac_Contact (ContactID,UserID) VALUES (NULL,\"$name\");";
+		if ($dbh->query($sql2)){
+			//return the created ID
+			return $dbh->lastInsertId();
+		} else {
+			echo "aborting due to error creating new Contact! in line " . $row;
+			break;
+		}
+	}
+}
+function CheckDomain($domain) {
+	global $dbh;
+	$sql="SELECT * FROM fac_DomainName WHERE DomainName=\"$domain\" LIMIT 1;";
+	if ($row=$dbh->query($sql)->fetch()){
+        	return $row['DomainID'];
+        }else if($domain){
+		$sql2="INSERT INTO fac_Domain (DomainID,DomainName) VALUES (NULL,\"$domain\");";
+                if ($dbh->query($sql2)){
+                        //return the created ID
+                        return $dbh->lastInsertId();
+                } else {
+                        echo "aborting due to error creating new Domain! in line " . $row;
+                        break;
+                }
+
+		//so the serial number is not there, lets check for hostname
+		return 0;
+	}
 }
 ?>

@@ -1006,6 +1006,7 @@ class Device {
 	var $Rights;
 	var $HalfDepth ;
 	var $BackSide ;
+	var $DomainName ;
 	
 	function MakeSafe() {
 		if ( ! is_object( $this ) ) {
@@ -1051,6 +1052,7 @@ class Device {
 		$this->Reservation=intval($this->Reservation);
 		$this->HalfDepth=intval($this->HalfDepth);
 		$this->BackSide=intval($this->BackSide);
+		$this->DomainName=intval($this->DomainName);
 	}
 	
 	function MakeDisplay() {
@@ -1112,6 +1114,7 @@ class Device {
 		$dev->Reservation=$dbRow["Reservation"];
 		$dev->HalfDepth=$dbRow["HalfDepth"];
 		$dev->BackSide=$dbRow["BackSide"];
+		$dev->DomainName=$dbRow["DomainName"];
 		
 		$dev->MakeDisplay();
 		if($filterrights){
@@ -1141,7 +1144,7 @@ class Device {
 
 		// Remove information that this user isn't allowed to see
 		if($this->Rights=='None'){
-			$publicfields=array('DeviceID','Label','Cabinet','Position','Height','Reservation','DeviceType','AssetLifeCycle','Rights');
+			$publicfields=array('DeviceID','Label','Cabinet','Position','Height','Reservation','DeviceType','AssetLifeCycle','Rights','DomainName');
 			foreach($this as $prop => $value){
 				if(!in_array($prop,$publicfields)){
 					$this->$prop=null;
@@ -1172,7 +1175,7 @@ class Device {
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
 			AssetLifeCycle=\"$this->AssetLifeCycle\",DecomDate=\"".date("Y-m-d", strtotime($this->DecomDate))."\", 
 			EISService=$this->LService, 
-			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide;";
+			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide, DomainName=$this->DomainName;";
 
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
@@ -1452,7 +1455,7 @@ class Device {
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
 			AssetLifeCycle=\"$this->AssetLifeCycle\",DecomDate=\"".date("Y-m-d", strtotime($this->DecomDate))."\",  
 			EISService=$this->LService,
-			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
+			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide, DomainName==$this->DomainName WHERE DeviceID=$this->DeviceID;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();

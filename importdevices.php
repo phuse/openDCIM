@@ -9,7 +9,33 @@
         $status="";
         $newdata="";
 	$row=1;
-if (($handle = fopen("devices.csv", "r")) !== FALSE) {
+$allowedExts = "csv";
+$temp = explode(".", $_FILES["file"]["name"]);
+$extension = end($temp);
+//if (($_FILES["file"]["type"] == "text/csv")
+//& ($extension==$allowedExts))
+if ($extension==$allowedExts) {
+  if ($_FILES["file"]["error"] > 0)
+    {
+    echo "Error: " . $_FILES["file"]["error"] . "<br>";
+    }
+  else
+    {
+    echo "Upload: " . $_FILES["file"]["name"] . "<br>";
+    echo "Type: " . $_FILES["file"]["type"] . "<br>";
+    echo "Size: " . ($_FILES["file"]["size"] / 1024) . " kB<br>";
+    echo "Stored in: " . $_FILES["file"]["tmp_name"];
+    }
+  }
+else
+  {
+  echo "Invalid file";
+  }
+
+//if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
+if (($handle = fopen($_FILES["file"]["tmp_name"], "r")) !== FALSE) {
+
+//if (($handle = fopen("devices.csv", "r")) !== FALSE) {
     while (($data = fgetcsv($handle, 500, ",")) !== FALSE) {
         $cab=new Cabinet();
         $dev=new Device();

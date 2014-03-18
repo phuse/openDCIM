@@ -9,13 +9,42 @@
         $status="";
         $newdata="";
 	$row=1;
-if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
-    while (($data = fgetcsv($handle, 500, ",")) !== FALSE) {
+$allowedExts = "csv";
+$temp = explode(".", $_FILES["file"]["name"]);
+$extension = end($temp);
+//if (($_FILES["file"]["type"] == "text/csv")
+//& ($extension==$allowedExts))
+if ($extension==$allowedExts) {
+  if ($_FILES["file"]["error"] > 0)
+    {
+    echo "Error: " . $_FILES["file"]["error"] . "<br>";
+    }
+  else
+    {
+    echo "Upload: " . $_FILES["file"]["name"] . "<br>";
+    echo "Type: " . $_FILES["file"]["type"] . "<br>";
+    echo "Size: " . ($_FILES["file"]["size"] / 1024) . " kB<br>";
+    echo "Stored in: " . $_FILES["file"]["tmp_name"];
+    }
+  }
+else
+  {
+  echo "Invalid file";
+  }
+
+//if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
+if (($handle = fopen($_FILES["file"]["tmp_name"], "r")) !== FALSE) {
+    while (($data = fgetcsv($handle, 500, ";")) !== FALSE) {
+    // KISTA while (($data = fgetcsv($handle, 500, ",")) !== FALSE) {
 	$tagarray=array();
         $cab=new Cabinet();
         $num = count($data);
         echo "<p> $num fields in line $row: <br /></p>\n";
-        $DataCenterID=CheckDataCenterID($data[0],$row); 
+	if ($data[0]){
+        	$DataCenterID=CheckDataCenterID($data[0],$row); 
+	}else{
+		$DataCenterID=-2;
+	}
         $CabinetID=CheckCabinetExists($data[1],$DataCenterID); 
 	//populate data
 	$newdata->CabinetHeight=$data[4]; 
@@ -58,21 +87,10 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
 	var_dump($tagarray);
 	$cab->SetTags($tagarray);
         $row++;
-        /* echo "Datacenter:" . $data[0] . " id: " . $DataCenterID . "<br />\n";
-        echo "CabinetName:" . $data[1] . " Id:" . $CabinetID . "<br />\n";
-        echo "Manufacturer:" . $data[2] . "<br />\n";
-        echo "model:" . $cab->CabinetModel . "<br />\n";
-        echo "height" . $data[4] . "<br />\n";
-        echo "maxkw: " . $data[5] . "<br />\n";
-        echo "maxweight:" . $data[6] . "<br />\n";
-        echo "installdate:" . $data[7] . "<br />\n";
-        echo "<pre>" . $data[8] . "</pre><br />\n";
-        for ($c=9; $c < $num; $c++) {
-            echo "tag" . $c . ":" . $data[$c] . "<br />\n";
-        } 
-	*/
     }
     fclose($handle);
+} else {
+echo "error handling file " . $_FILES["file"]["name"];
 }
 /* function setvars() {
 	$this->MakeSafe();
@@ -82,19 +100,19 @@ if (($handle = fopen("cabinets.csv", "r")) !== FALSE) {
 function CheckDataCenterID($name,$row) {
 	//gets the id of the datacenter in the csv and creates a new datacenter if needed
 	global $dbh;
-	$sql="SELECT * FROM fac_DataCenter WHERE Name=\"$name\" LIMIT 1;";
-	if ($DCrow=$dbh->query($sql)->fetch()){
-        	return $DCrow['DataCenterID'];
-        }else{
-		$sql2="INSERT INTO fac_DataCenter (DataCenterID,Name) VALUES (NULL,\"$name\");";
-		if ($dbh->query($sql2)){
-			//return the created ID
-			return $dbh->lastInsertId();
-		} else {
-			echo "aborting due to error creating new DC! in line " . $row;
-			break;
+		$sql="SELECT * FROM fac_DataCenter WHERE Name=\"$name\" LIMIT 1;";
+		if ($DCrow=$dbh->query($sql)->fetch()){
+        		return $DCrow['DataCenterID'];
+		}else{
+			$sql2="INSERT INTO fac_DataCenter (DataCenterID,Name) VALUES (NULL,\"$name\");";
+			if ($dbh->query($sql2)){
+				//return the created ID
+				return $dbh->lastInsertId();
+			} else {
+				echo "aborting due to error creating new DC! in line " . $row;
+				break;
+			}
 		}
-	}
 }
 function CheckCabinetExists($name,$DCid) {
 	global $dbh;

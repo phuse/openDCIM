@@ -29,6 +29,9 @@ CREATE TABLE IF NOT EXISTS `fac_DomainName` (
   `DomainName` varchar(60) NOT NULL,
   PRIMARY KEY (`DomainID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
-
-
+-- Backsides SEKI specific
+CREATE TABLE IF NOT EXISTS `fac_Backsides` (
+  `RackID` int(11) NOT NULL,
+  `BackName` varchar(16) NOT NULL,
+  UNIQUE KEY `RackID` (`RackID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

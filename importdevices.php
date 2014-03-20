@@ -41,11 +41,12 @@ if (($handle = fopen($_FILES["file"]["tmp_name"], "r")) !== FALSE) {
     while (($data = fgetcsv($handle, 500, ",")) !== FALSE) {
         $cab=new Cabinet();
         $dev=new Device();
+	$tagarray=array();
         $num = count($data);
         echo "<p> $num fields in line $row: <br /></p>\n";
         $DataCenterID=CheckDataCenterID($data[14],$row); 
 	// Find parent device, do not put chassis in chassis
-	/*if ($data[16] AND $data[17]!=="Chassis"){  
+	if ($data[16] AND $data[17]!=="Chassis"){  
 		//$newdata->Parent=CheckParent(data[13]);	
 	} else {
 		if ($data[17]=="Chassis"){
@@ -56,14 +57,13 @@ if (($handle = fopen($_FILES["file"]["tmp_name"], "r")) !== FALSE) {
 		}
 		$newdata->Parent=NULL;
 	}
-	*/
 	//if the device has a parent set cabinetid to 0, and if the cabinet can not be found, produce a error and put the device in storage
 	if ($newdata->Parent){
 		$CabinetID=0;
 	}else{
         	$CabinetID=CheckCabinetExists($data[15],$DataCenterID); 
 		//if we can't find the cabinet listed, add the device to storage 
-		if ($CabinetID=0){
+		if ($CabinetID==0){
 		echo "error! cabinet :" . $data[15] . " in row:" . $row . "is not defined, device " . $data[2] . "/" . $data[3] . " has been registered in storage<br>";		
 		$CabinetID=-1;
 		}
@@ -80,10 +80,11 @@ if (($handle = fopen($_FILES["file"]["tmp_name"], "r")) !== FALSE) {
 	$newdata->DomainName=CheckDomain($data[4]);//This should be looked up in future version 
 	$newdata->AssetTag=$data[5]; 
 	$newdata->PrimaryIP=$data[6]; 
-	$newdata->MfgDate=$data[7]; 
-	$newdata->InstallDate=$data[8]; 
+	$newdata->MfgDate=date('m/d/Y', strtotime($data[7])); 
+	//$newdata->InstallDate=$data[8]; 
+	$newdata->InstallDate=date('m/d/Y', strtotime($data[8])); 
 	$newdata->WarrantyCo=$data[9]; 
-	$newdata->WarrantyExpire=$data[10]; 
+	$newdata->WarrantyExpire=date('m/d/Y', strtotime($data[10])); 
 	$newdata->Owner=$data[11]; 
 	$newdata->AssetLifeCycle=$data[12]; 
 	// lookup contact if defined
@@ -103,7 +104,7 @@ if (($handle = fopen($_FILES["file"]["tmp_name"], "r")) !== FALSE) {
 	$newdata->PowerSupplyCount=$data[23]; 
 	$newdata->NominalWatts=$data[24]; 
 	$newdata->DeviceType=$data[25];//Identify type id 
-	$newdata->DecomDate=$data[26]; 
+	$newdata->DecomDate=date('m/d/Y', strtotime($data[26])); 
 	$newdata->Notes=$data[27]; 
 	$newdata->DataCenterID=$DataCenterID; 
 	// insert function to create Template id based on manufacturer, model, height, dataports, wattage,psus and device type
@@ -118,7 +119,7 @@ if (($handle = fopen($_FILES["file"]["tmp_name"], "r")) !== FALSE) {
 	$newdata->MaxKW=$data[5]; 
 	$newdata->MaxWeight=$data[6]; 
 	$newdata->Notes=$data[8]; 
-	$newdata->InstallationDate=date('m/d/Y', strtotime($data[7])); 
+	$newdata->Cabinet=$CabinetID;
 	//create the device if it's missing or update it if it exists
         if ($DeviceID==0){
 		$dev->DeviceID=NULL;
@@ -126,6 +127,7 @@ if (($handle = fopen($_FILES["file"]["tmp_name"], "r")) !== FALSE) {
 		echo "created:<br />";
 		//$dev->CreateDevice();
 		var_dump($dev);
+		$dev->CreateDevice();
 	}else{
 		$dev->DeviceID=$DeviceID;
 		echo "updated:<br />";
@@ -140,8 +142,10 @@ if (($handle = fopen($_FILES["file"]["tmp_name"], "r")) !== FALSE) {
 		//acutally push to db
 		//$cab->UpdateCabinet();
 		var_dump($dev);
+		$dev->UpdateDevice();
 	}
 	var_dump($tagarray);
+	$dev->SetTags($tagarray);
         //$dev->SetTags($tagarray);
         $row++;
     }

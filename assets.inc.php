@@ -1016,7 +1016,7 @@ class Device {
 		
 		//Keep weird values out of DeviceType
 		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
-		$validassetlifecyclestate=array('Installing','In Production','Maintenance','End Of Life','Decomissioned');
+		$validassetlifecyclestate=array('Installing','In Production','Maintenance','End Of Life','Decommissioned');
 
 		$this->DeviceID=intval($this->DeviceID);
 		$this->Label=addslashes(trim($this->Label));
@@ -1039,7 +1039,7 @@ class Device {
 		$this->NominalWatts=intval($this->NominalWatts);
 		$this->PowerSupplyCount=intval($this->PowerSupplyCount);
 		$this->DeviceType=(in_array($this->DeviceType,$validdevicetypes))?$this->DeviceType:'Server';
-		$this->AssetLifeCycle=(in_array($this->AssetLifeCycle,$validassetlifecyclestate))?$this->AssetLifeCycle:'Installing';
+		$this->AssetLifeCycle=(in_array($this->AssetLifeCycle,$validassetlifecyclestate))?$this->AssetLifeCycle:'Unknown';
 		$this->ChassisSlots=intval($this->ChassisSlots);
 		$this->RearChassisSlots=intval($this->RearChassisSlots);
 		$this->ParentDevice=intval($this->ParentDevice);

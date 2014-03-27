@@ -520,7 +520,7 @@
 						'In Production' => __("In Production"),
 						'Maintenance' => __("Maintenance"),
 						'End Of Life' => __("End Of Life"),
-						'Decomissioned' => __("Decomissioned"));
+						'Decommissioned' => __("Decommissioned"));
 
 	// We don't want someone accidentally adding a chassis device inside of a chassis slot.
 	if($dev->ParentDevice>0){
@@ -1851,7 +1851,7 @@ echo '             <div>
                 	}
 echo '		  </select></div>
 		</div>';
-            	if(($write) && ($dev->AssetLifeCycle=="Decomissioned")){
+            	if(($write) && ($dev->AssetLifeCycle=="Decommissioned")){
 			echo '<div>
 		   	<div><font color=red><label for="decomdate">'.__("Hardware Disposal Date").'</label></font></div>
 		   	<div><input type="text" class="validate[custom[date]] datepicker" name="decomdate" id="decomdate" value="'.date('m/d/Y',strtotime($dev->DecomDate)).'"></div>
@@ -2359,7 +2359,8 @@ echo '	<div class="table">
 		});
 <?php } 
 	LogActions::LogThis($this); ?>
-	});
+
+		});
 </script>
 
 </body>

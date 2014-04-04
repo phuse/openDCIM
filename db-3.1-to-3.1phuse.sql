@@ -29,3 +29,8 @@ CREATE TABLE IF NOT EXISTS `fac_DomainName` (
   `DomainName` varchar(60) NOT NULL,
   PRIMARY KEY (`DomainID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+CREATE TABLE IF NOT EXISTS `fac_LegacyPortID` (
+  `ID` int(11) NOT NULL,
+  `OldID` int(11) NOT NULL,
+  UNIQUE KEY `ID` (`ID`,`OldID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

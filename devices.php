@@ -367,7 +367,7 @@
 				$dev->DeviceType=$_POST['devicetype'];
 				$dev->AssetLifeCycle=$_POST['assetlifecycle'];
 				$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
-				$dev->DecomDate=date('Y-m-d',strtotime($_POST['decomdate']));
+				if (isset($_POST['decomdate'])) { $dev->DecomDate=date('Y-m-d',strtotime($_POST['decomdate'])); }
 				$dev->InstallDate=date('Y-m-d',strtotime($_POST['installdate']));
 				$dev->WarrantyCo=$_POST['warrantyco'];
 				$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['warrantyexpire']));
@@ -2053,7 +2053,7 @@ echo '	</div>
 
 	foreach($childList as $chDev){
 		print "\t\t<div".(($chDev->BackSide)?' class="greybg"':'').">
-			<div>$chDev->Position</div>
+			<div><a href=\"devices.php?deviceid=$chDev->DeviceID\">$chDev->Position</a></div>
 			<div>$chDev->Height</div>
 			<div><a href=\"devices.php?deviceid=$chDev->DeviceID\">$chDev->Label</a></div>
 			<div>$chDev->DeviceType</div>
@@ -2357,8 +2357,7 @@ echo '	<div class="table">
 		}).then(function(){
 			movebuttons();
 		});
-<?php } 
-	LogActions::LogThis($this); ?>
+<?php } ?>
 
 		});
 </script>

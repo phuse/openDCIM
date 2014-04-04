@@ -1016,7 +1016,7 @@ class Device {
 		
 		//Keep weird values out of DeviceType
 		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
-		$validassetlifecyclestate=array('Installing','In Production','Maintenance','End Of Life','Decommissioned');
+		$validassetlifecyclestate=array('Installing','In Production','Maintenance','End Of Life','Decommissioned','Unknown');
 
 		$this->DeviceID=intval($this->DeviceID);
 		$this->Label=addslashes(trim($this->Label));

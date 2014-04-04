@@ -1,6 +1,7 @@
 <?php
         require_once( 'db.inc.php' );
         require_once( 'facilities.inc.php' );
+        require_once( 'importfunctions.inc.php' );
 
         $dept=new Department();
         $DC=new DataCenter();
@@ -45,34 +46,39 @@ if (($handle = fopen($_FILES["file"]["tmp_name"], "r")) !== FALSE) {
 	}else{
 		$DataCenterID=-2;
 	}
-        $CabinetID=CheckCabinetExists($data[1],$DataCenterID); 
-	//populate data
-	$newdata->CabinetHeight=$data[4]; 
-	$newdata->Location=$data[1]; 
-	$newdata->DataCenterID=$DataCenterID; 
-	//only update existing if we have both model and manufacturer 
-	if ($data[2] AND $data[3] OR $CabinetID==0){
-		$newdata->Model=$data[2] . " " .$data[3]; 
-	}else{
-		$newdata->Model=$data[3]; 
-	}
-	$newdata->MaxKW=$data[5]; 
-	$newdata->MaxWeight=$data[6]; 
-	$newdata->Notes=$data[8]; 
-	$newdata->InstallationDate=date('m/d/Y', strtotime($data[7])); 
-	//populate tags
-        for ($c=9; $c < $num; $c++) {
-            array_push($tagarray, $data[$c]);
-        } 
-        echo "CabinetName:" . $data[1] . " Id:" . $CabinetID . "<br />\n";
-	//create the cabinet if it's missing or update it if it exists
-        if ($CabinetID==0){
+        $frontname=CheckBackside($data[1],$data[0]); // we don't want to add alrerady registered backsides 
+	echo "<BR>" . $data[1] . " is " . $frontname;
+	if ($frontname !== $data[1]){
+	echo "<BR>" . $data[1] . " is a backside.. not adding" . $frontname;
+	}else{  
+       	 	$CabinetID=CheckCabinetExists($data[1],$DataCenterID); 
+		//populate data
+		$newdata->CabinetHeight=$data[4]; 
+		$newdata->Location=$data[1]; 
+		$newdata->DataCenterID=$DataCenterID; 
+		//only update existing if we have both model and manufacturer 
+		if ($data[2] AND $data[3] OR $CabinetID==0){
+			$newdata->Model=$data[2] . " " .$data[3]; 
+		}else{
+			$newdata->Model=$data[3]; 
+		}
+		$newdata->MaxKW=$data[5]; 
+		$newdata->MaxWeight=$data[6]; 
+		$newdata->Notes=$data[8]; 
+		$newdata->InstallationDate=date('m/d/Y', strtotime($data[7])); 
+		//populate tags
+       		 for ($c=9; $c < $num; $c++) {
+       	   	  array_push($tagarray, $data[$c]);
+       		 } 
+      		  echo "CabinetName:" . $data[1] . " Id:" . $CabinetID . "<br />\n";
+		//create the cabinet if it's missing or update it if it exists
+    	    if ($CabinetID==0){
 		$cab->CabinetID=NULL;
 		$cab=UpdateCabinetData($newdata);
 		echo "created:<br />";
 		$cab->CreateCabinet();
 		var_dump($cab);
-	}else{
+	    }else{
 		$cab->CabinetID=$CabinetID;
 		echo "updated:<br />";
 		$cab->GetCabinet();
@@ -83,6 +89,7 @@ if (($handle = fopen($_FILES["file"]["tmp_name"], "r")) !== FALSE) {
 		$cab->UpdateCabinet();
 		echo "<p>new data<br />";
 		var_dump($cab);
+		}
 	}
 	var_dump($tagarray);
 	$cab->SetTags($tagarray);

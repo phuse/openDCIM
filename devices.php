@@ -2093,6 +2093,17 @@ echo '	<div class="table">
 		}
 		print "</fieldset>\n";
 	}
+	if (class_exists('LogActions')){
+		echo '<fieldset id="logframe">	<legend>',__("Device Log Information"),'</legend>';
+		//$Loglist=array();
+		echo '<div class="table">';
+		echo "<div><div>Time</div><div>  Action</div><div>Username</div></div>";
+		foreach(LogActions::ShowDeviceLog($dev->DeviceID,10) as $Loglist){
+		echo "<div><div>" . $Loglist->Time . "</div> <div>. " . $Loglist->Action . "</div><div>" . $Loglist->Username ."</div></div>";
+		}
+		echo "<div><A HREF=logdisplay.php?DEVICE=" . $dev->DeviceID . ">show all logs</A></div>";
+		echo '</div>';
+	}
 ?>
 </div><!-- END div.right -->
 <div class="table" id="pandn">

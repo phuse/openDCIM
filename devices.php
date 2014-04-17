@@ -808,10 +808,14 @@ $(document).ready(function() {
 	});
 
 	$('#deviceform').validationEngine();
-	$('#mfgdate').datepicker();
+	$('#mfgdate').datepicker({ dateFormat: 'yy/mm/dd' });
+	$('#installdate').datepicker({ dateFormat: 'yy/mm/dd' });
+	$('#warrantyexpire').datepicker({ dateFormat: 'yy/mm/dd' });
+	$('#decomdate').datepicker({ dateFormat: 'yy/mm/dd' }); 
+	/* $('#mfgdate').datepicker(); 
 	$('#installdate').datepicker();
 	$('#warrantyexpire').datepicker();
-	$('#decomdate').datepicker();
+	$('#decomdate').datepicker(); */
 	$('#owner').next('button').click(function(){
 		window.open('contactpopup.php?deptid='+$('#owner').val(), 'Contacts Lookup', 'width=800, height=700, resizable=no, toolbar=no');
 		return false;
@@ -1794,12 +1798,12 @@ echo '          </div>
 		</div>
 		<div>
 		   <div><label for="mfgdate">'.__("Manufacture Date").'</label></div>
-		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="mfgdate" id="mfgdate" value="'.(($dev->MfgDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->MfgDate)):"").'">
+		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="mfgdate" id="mfgdate" value="'.(($dev->MfgDate>'0000-00-00 00:00:00')?date('Y/m/d',strtotime($dev->MfgDate)):"").'">
 		   </div>
 		</div>
 		<div>
 		   <div><label for="installdate">'.__("Install Date").'</label></div>
-		   <div><input type="text" class="validate[required,custom[date]] datepicker" name="installdate" id="installdate" value="'.(($dev->InstallDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->InstallDate)):"").'"></div>
+		   <div><input type="text" class="validate[required,custom[date]] datepicker" name="installdate" id="installdate" value="'.(($dev->InstallDate>'0000-00-00 00:00:00')?date('Y/m/d',strtotime($dev->InstallDate)):"").'"></div>
 		</div>
 		<div>
 		   <div><label for="warrantyco">'.__("Warranty Company").'</label></div>
@@ -1807,7 +1811,7 @@ echo '          </div>
 		</div>
 		<div>
 		   <div><label for="installdate">'.__("Warranty Expiration").'</label></div>
-		   <div><input type="text" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="'.date('m/d/Y',strtotime($dev->WarrantyExpire)).'"></div>
+		   <div><input type="text" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="'.date('Y/m/d',strtotime($dev->WarrantyExpire)).'"></div>
 		</div>
 		<div>
 		   <div><label for="owner">'.__("Department (PDU)").'</label></div>
@@ -1854,7 +1858,7 @@ echo '		  </select></div>
             	if(($write) && ($dev->AssetLifeCycle=="Decommissioned")){
 			echo '<div>
 		   	<div><font color=red><label for="decomdate">'.__("Hardware Disposal Date").'</label></font></div>
-		   	<div><input type="text" class="validate[custom[date]] datepicker" name="decomdate" id="decomdate" value="'.date('m/d/Y',strtotime($dev->DecomDate)).'"></div>
+		   	<div><input type="text" class="validate[custom[date]] datepicker" name="decomdate" id="decomdate" value="'.date('Y/m/d',strtotime($dev->DecomDate)).'"></div>
 			</div>';
  		}
 echo '		<div>

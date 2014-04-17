@@ -94,7 +94,11 @@ class LogActions {
 	// Add in functions here for actions lookup by device, user, date, etc
 	static function ShowDeviceLog($device,$count){
 		global $dbh;
-		$sql="SELECT * FROM fac_DeviceLog WHERE DeviceID=\"$device\" ORDER BY Time DESC LIMIT $count;";
+		if ($count == NULL){
+			$sql="SELECT * FROM fac_DeviceLog WHERE DeviceID=\"$device\" ORDER BY Time DESC;";
+		}else{
+			$sql="SELECT * FROM fac_DeviceLog WHERE DeviceID=\"$device\" ORDER BY Time DESC LIMIT $count;";
+		}
 		$dbh->query($sql);
 		$logList=array();
                 foreach($dbh->query($sql) as $row){

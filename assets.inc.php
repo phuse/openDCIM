@@ -975,6 +975,7 @@ class Device {
 	var $Label;
 	var $SerialNo;
 	var $AssetTag;
+	var $BamsID;
 	var $PrimaryIP;
 	var $SNMPCommunity;
 	var $ESX;
@@ -1022,6 +1023,7 @@ class Device {
 		$this->Label=addslashes(trim($this->Label));
 		$this->SerialNo=addslashes(trim($this->SerialNo));
 		$this->AssetTag=addslashes(trim($this->AssetTag));
+		$this->BamsID=addslashes(trim($this->BamsID));
 		$this->PrimaryIP=addslashes(trim($this->PrimaryIP));
 		$this->SNMPCommunity=addslashes(trim($this->SNMPCommunity));
 		$this->ESX=intval($this->ESX);
@@ -1059,6 +1061,7 @@ class Device {
 		$this->Label=stripslashes($this->Label);
 		$this->SerialNo=stripslashes($this->SerialNo);
 		$this->AssetTag=stripslashes($this->AssetTag);
+		$this->BamsID=stripslashes($this->BamsID);
 		$this->PrimaryIP=stripslashes($this->PrimaryIP);
 		$this->SNMPCommunity=stripslashes($this->SNMPCommunity);
 		$this->MfgDate=stripslashes($this->MfgDate);
@@ -1083,6 +1086,7 @@ class Device {
 		$dev->Label=$dbRow["Label"];
 		$dev->SerialNo=$dbRow["SerialNo"];
 		$dev->AssetTag=$dbRow["AssetTag"];
+		$dev->BamsID=$dbRow["BamsID"];
 		$dev->PrimaryIP=$dbRow["PrimaryIP"];
 		$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
 		$dev->ESX=$dbRow["ESX"];
@@ -1175,7 +1179,7 @@ class Device {
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
 			AssetLifeCycle=\"$this->AssetLifeCycle\",DecomDate=\"".date("Y-m-d", strtotime($this->DecomDate))."\", 
 			EISService=$this->LService, 
-			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide, DomainName=$this->DomainName;";
+			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide, DomainName=$this->DomainName, BamsID=\"$this->BamsID\";";
 
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
@@ -1455,7 +1459,7 @@ class Device {
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
 			AssetLifeCycle=\"$this->AssetLifeCycle\",DecomDate=\"".date("Y-m-d", strtotime($this->DecomDate))."\",  
 			EISService=$this->LService,
-			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide, DomainName=$this->DomainName WHERE DeviceID=$this->DeviceID;";
+			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide, DomainName=$this->DomainName, BamsID=\"$this->BamsID\" WHERE DeviceID=$this->DeviceID;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -2075,6 +2079,7 @@ class DevicePorts {
 	var $ConnectedDeviceID;
 	var $ConnectedPort;
 	var $Notes;
+	//var $LegacyID;
 	
 	function MakeSafe() {
 		$this->DeviceID=intval($this->DeviceID);
@@ -2110,6 +2115,7 @@ class DevicePorts {
 		$dp->ConnectedDeviceID=$dbRow['ConnectedDeviceID'];
 		$dp->ConnectedPort=$dbRow['ConnectedPort'];
 		$dp->Notes=$dbRow['Notes'];
+		//$dp->LegacyID=$dbRow['LegacyID'];
 
 		$dp->MakeDisplay();
 
@@ -2165,6 +2171,7 @@ class DevicePorts {
 			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, 
 			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
 			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\";";
+			//ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\", LegacyID=\"$this->LegacyID\";";
 			
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -2294,11 +2301,20 @@ class DevicePorts {
 		}
 
 		// update port
+		if($this->LegacyID>0){
+		$sql="UPDATE fac_Ports SET MediaID=$this->MediaID, ColorID=$this->ColorID, 
+			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
+			Label=\"$this->Label\", ConnectedPort=$this->ConnectedPort, 
+			Notes=\"$this->Notes\", LegacyID=\"$this->LegacyID\" WHERE DeviceID=$this->DeviceID AND 
+			PortNumber=$this->PortNumber;";
+		}else{
 		$sql="UPDATE fac_Ports SET MediaID=$this->MediaID, ColorID=$this->ColorID, 
 			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
 			Label=\"$this->Label\", ConnectedPort=$this->ConnectedPort, 
 			Notes=\"$this->Notes\" WHERE DeviceID=$this->DeviceID AND 
 			PortNumber=$this->PortNumber;";
+
+		}
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -2869,6 +2885,7 @@ class RackRequest {
   var $Label;
   var $SerialNo;
   var $AssetTag;
+  var $BamsID;
   var $ESX;
   var $Owner;
   var $LService;
